@@ -88,4 +88,6 @@ Both extensions are pre-loaded via `shared_preload_libraries=timescaledb,pg_duck
 The image is built in two stages:
 
 1. **Builder** – installs a C/C++ toolchain on `postgres:18-alpine`, clones both extension repositories, and compiles them against the PostgreSQL headers already present in the image.
-2. **Runtime** – starts from a fresh `postgres:18-alpine`, copies only the compiled `.so` files and SQL/control files, and adds the minimal shared libraries required at runtime.
+2. **Runtime** – starts from a fresh `postgres:18-alpine`, copies only the compiled `.so` files and SQL/control files, and adds the minimal shared libraries required at runtime (`libstdc++`, `libgomp`, `lz4-libs`, `zstd-libs`, `openssl`).
+
+The runtime image sets `CMD ["postgres", "-c", "shared_preload_libraries=timescaledb,pg_duckdb"]` so both extensions are pre-loaded automatically. After starting a container users only need to run `CREATE EXTENSION` once per database to activate the extensions.
