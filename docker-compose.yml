@@ -1,0 +1,28 @@
+services:
+  postgres:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        PG_MAJOR: "18"
+        TIMESCALEDB_VERSION: "main"
+        PG_DUCKDB_VERSION: "main"
+    image: pg_timescale_duckdb:latest
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    # shared_preload_libraries is already set in the CMD of the Dockerfile.
+    # Additional PostgreSQL settings can be passed here, e.g.:
+    # command: >
+    #   postgres
+    #   -c shared_preload_libraries=timescaledb,pg_duckdb
+    #   -c max_connections=200
+
+volumes:
+  pgdata:
